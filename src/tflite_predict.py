@@ -18,15 +18,21 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 from PIL import Image
 
-# Import TFLite Interpreter (gracefully supporting tflite_runtime on Raspberry Pi)
+# Import TFLite Interpreter (supporting ai_edge_litert, tflite_runtime, and tensorflow)
 try:
-    import tflite_runtime.interpreter as tflite
+    import ai_edge_litert.interpreter as tflite
 except ImportError:
     try:
-        import tensorflow.lite as tflite
+        import tflite_runtime.interpreter as tflite
     except ImportError:
-        import tensorflow as tf
-        tflite = tf.lite
+        try:
+            import tensorflow.lite as tflite
+        except ImportError:
+            try:
+                import tensorflow as tf
+                tflite = tf.lite
+            except ImportError:
+                tflite = None
 
 # Ensure src can be imported
 try:
@@ -118,6 +124,11 @@ def run_tflite_inference(
     class_names = load_class_names(CLASS_NAMES_JSON_PATH)
 
     # 2. Initialize TFLite Interpreter
+    if tflite is None:
+        raise RuntimeError(
+            "No TFLite runtime found on this environment. "
+            "Please install 'ai-edge-litert' (pip install ai-edge-litert) or 'tflite-runtime'."
+        )
     interpreter = tflite.Interpreter(model_path=str(model_path))
     interpreter.allocate_tensors()
 

@@ -18,19 +18,21 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 from PIL import Image
 
-# Import TFLite Interpreter (supports tflite-runtime, tensorflow, and LiteRT)
+# Import TFLite Interpreter (supports LiteRT, tflite-runtime, and tensorflow)
 try:
-    import tflite_runtime.interpreter as tflite
+    import ai_edge_litert.interpreter as tflite
 except ImportError:
     try:
-        import tensorflow.lite as tflite
+        import tflite_runtime.interpreter as tflite
     except ImportError:
         try:
-            import ai_edge_litert.interpreter as tflite
+            import tensorflow.lite as tflite
         except ImportError:
-            print("[ERROR] Neither tflite-runtime nor tensorflow is installed.")
-            print("Please run: pip install -r requirements.txt")
-            sys.exit(1)
+            try:
+                import tensorflow as tf
+                tflite = tf.lite
+            except ImportError:
+                tflite = None
 
 # Dynamic local paths within deployment package
 DEPLOYMENT_ROOT = Path(__file__).resolve().parent.parent

@@ -23,10 +23,11 @@ An end-to-end, production-grade agricultural diagnosis and advisory ecosystem co
 - [5. Edge Hardware Setup (Raspberry Pi 5)](#5-edge-hardware-setup-raspberry-pi-5)
 - [6. Project Directory Structure](#6-project-directory-structure)
 - [7. Installation & Quickstart](#7-installation--quickstart)
-- [8. Web Dashboard Features](#8-web-dashboard-features)
-- [9. REST API Reference](#9-rest-api-reference)
-- [10. Reproducibility & Model Training](#10-reproducibility--model-training)
-- [11. Authors & License](#11-authors--license)
+- [8. Deploying to Render (Free Cloud Hosting)](#8-deploying-to-render-free-cloud-hosting)
+- [9. Web Dashboard Features](#9-web-dashboard-features)
+- [10. REST API Reference](#10-rest-api-reference)
+- [11. Reproducibility & Model Training](#11-reproducibility--model-training)
+- [12. Authors & License](#12-authors--license)
 
 ---
 
@@ -242,7 +243,7 @@ export GEMINI_API_KEY="your-google-gemini-api-key"
 ```
 *(If no API key is set, the system automatically falls back to curated ICAR/TNAU offline agronomic expert protocols).*
 
-### Step 5: Launch the Dashboard
+### Step 5: Launch the Dashboard Locally
 ```bash
 bash start_dashboard.sh
 # Or directly via: python3 app.py
@@ -254,7 +255,44 @@ http://localhost:5001   (or http://<raspberry-pi-ip>:5001)
 
 ---
 
-## 8. Web Dashboard Features
+## 8. Deploying to Render (Free Cloud Hosting)
+
+This repository includes native **[render.yaml](render.yaml)** Blueprint configuration and lightweight inference dependencies for seamless deployment on Render.
+
+### Why Render Free Builds Previously Failed:
+1. **Out of Memory (OOM Killer)**: Full `tensorflow` is >500 MB and consumes >700 MB of RAM during compilation/linking, immediately exceeding Render Free Tier's 512 MB memory limit.
+2. **Missing Server & Web Packages**: `gunicorn`, `flask`, `opencv-python-headless`, and `gTTS` were missing from the production build.
+3. **Headless Linux Display Missing**: Standard `opencv-python` fails on cloud servers without GUI libraries (`libGL.so.1` missing).
+
+### The Fix in this Repository:
+* **LiteRT / TFLite Edge Runtime (`ai-edge-litert`)**: Only ~5 MB, installs in seconds, uses under 60 MB RAM for inference.
+* **Headless Computer Vision (`opencv-python-headless`)**: Zero GUI dependencies, works instantly in Linux containers.
+* **WSGI Production Server (`gunicorn`)**: Bound to `0.0.0.0:$PORT` with optimized worker threads for 512 MB instances.
+
+### Step-by-Step Render Deployment:
+1. Go to **[dashboard.render.com](https://dashboard.render.com/)** and click **New +** > **Web Service**.
+2. Connect your GitHub repository: `https://github.com/vishal-cse185/cotton-leaf-detection-iot-project-`.
+3. Configure the following settings:
+   - **Name**: `cotton-leaf-ai`
+   - **Environment**: `Python 3`
+   - **Region**: Any (e.g. `Oregon` or `Frankfurt`)
+   - **Branch**: `main`
+   - **Build Command**:
+     ```bash
+     pip install -U pip && pip install -r requirements.txt
+     ```
+   - **Start Command**:
+     ```bash
+     gunicorn app:app --workers 1 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT
+     ```
+   - **Instance Type**: `Free`
+4. *(Optional)* Add Environment Variable:
+   - `GEMINI_API_KEY`: *(Your Google AI Studio API Key for GenAI agronomic advisory)*
+5. Click **Create Web Service**. Your app will build in ~45 seconds and go live with a free HTTPS URL!
+
+---
+
+## 9. Web Dashboard Features
 
 1. **Live Camera Feed**: Real-time MJPEG live stream with foliar alignment crosshairs and target guides.
 2. **Instant Capture & Analyze**: Single-click image capture, multi-stage guard inspection, and sub-10ms classification.
@@ -268,7 +306,7 @@ http://localhost:5001   (or http://<raspberry-pi-ip>:5001)
 
 ---
 
-## 9. REST API Reference
+## 10. REST API Reference
 
 | Endpoint | Method | Payload / Params | Response | Description |
 |----------|:------:|------------------|----------|-------------|
@@ -281,31 +319,34 @@ http://localhost:5001   (or http://<raspberry-pi-ip>:5001)
 
 ---
 
-## 10. Reproducibility & Model Training
+## 11. Reproducibility & Model Training
 
 To retrain the MobileNetV2 architecture from scratch:
 
 ```bash
-# 1. Prepare and stratify the dataset (70% train, 15% val, 15% test)
+# 1. Install ML training requirements
+pip install -r requirements-train.txt
+
+# 2. Prepare and stratify the dataset (70% train, 15% val, 15% test)
 python3 src/prepare_dataset.py
 
-# 2. Run two-stage transfer learning with balanced class weights
+# 3. Run two-stage transfer learning with balanced class weights
 python3 src/train_model.py
 
-# 3. Evaluate test performance and generate confusion matrix
+# 4. Evaluate test performance and generate confusion matrix
 python3 src/evaluate_model.py
 
-# 4. Quantize to Float16 and INT8 TFLite formats
+# 5. Quantize to Float16 and INT8 TFLite formats
 python3 src/convert_to_tflite.py
 python3 src/quantize_int8.py
 
-# 5. Benchmark cross-model agreement and latency
+# 6. Benchmark cross-model agreement and latency
 python3 src/compare_models.py
 ```
 
 ---
 
-## 11. Authors & License
+## 12. Authors & License
 
 - **Author**: Vishal ([@vishal-cse185](https://github.com/vishal-cse185))
 - **Project**: IoT, DNN, and Generative AI Based Cotton Leaf Disease Detection and Advisory System

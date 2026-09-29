@@ -1,0 +1,40 @@
+================================================================================
+ MODEL COMPARISON REPORT — COTTON LEAF DISEASE DETECTION SYSTEM
+================================================================================
+Generated On          : 2026-09-04 13:39:00
+Evaluation Dataset    : dataset/test/ (205 independent samples)
+Target Architecture   : MobileNetV2 (Transfer Learning, 2-Stage)
+--------------------------------------------------------------------------------
+
+1. ORIGINAL KERAS MODEL (.keras)
+   - Model Path          : /Users/vishalp/Desktop/Cotton_Leaf_AI_Project/models/mobilenetv2_cotton_final.keras
+   - File Size           : 25.31 MB
+   - Test Accuracy       : 89.27%
+   - Average Latency     : 43.34 ms / image
+
+2. FLOAT16 TFLITE MODEL (.tflite) [RECOMMENDED DEPLOYMENT]
+   - Model Path          : /Users/vishalp/Desktop/Cotton_Leaf_AI_Project/models/cotton_leaf_mobilenetv2_float16.tflite
+   - File Size           : 4.62 MB
+   - Size Reduction      : 81.7%
+   - Test Accuracy       : 89.76%
+   - Accuracy Difference : +0.49%
+   - Keras Agreement     : 99.51%
+   - Average Latency     : 7.75 ms / image
+   - Speedup vs Keras    : 5.59x
+
+3. INT8 TFLITE MODEL (.tflite)
+   - Model Path          : /Users/vishalp/Desktop/Cotton_Leaf_AI_Project/models/cotton_leaf_mobilenetv2_int8.tflite
+   - File Size           : 2.77 MB
+   - Size Reduction      : 89.1%
+   - Test Accuracy       : 88.29%
+   - Accuracy Difference : -0.98%
+   - Keras Agreement     : 97.07%
+   - Average Latency     : 2.89 ms / image
+
+--------------------------------------------------------------------------------
+SUMMARY & RECOMMENDATION FOR RASPBERRY PI 5 DEPLOYMENT:
+The Float16 TFLite model (4.62 MB) provides the optimal balance of
+accuracy (89.76%), zero accuracy degradation, fast latency
+(7.75 ms), and 99.5% prediction agreement with Keras.
+It is selected as the primary edge deployment model.
+================================================================================

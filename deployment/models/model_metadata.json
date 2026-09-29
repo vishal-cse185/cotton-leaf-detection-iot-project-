@@ -1,0 +1,28 @@
+{
+    "model_name": "cotton_leaf_mobilenetv2_float16",
+    "architecture": "MobileNetV2 Transfer Learning",
+    "input_resolution": [
+        224,
+        224,
+        3
+    ],
+    "input_color_space": "RGB",
+    "number_of_classes": 5,
+    "class_names": {
+        "0": "Alternaria Leaf Spot",
+        "1": "Bacterial Blight",
+        "2": "Fusarium Wilt",
+        "3": "Healthy Leaf",
+        "4": "Verticillium Wilt"
+    },
+    "preprocessing_method": "MobileNetV2 scaling: (pixel / 127.5) - 1.0 (integrated)",
+    "source_keras_model_path": "/Users/vishalp/Desktop/Cotton_Leaf_AI_Project/models/mobilenetv2_cotton_final.keras",
+    "tflite_model_path": "/Users/vishalp/Desktop/Cotton_Leaf_AI_Project/models/cotton_leaf_mobilenetv2_float16.tflite",
+    "optimization_type": "Float16 Post-Training Quantization",
+    "keras_test_accuracy": 0.8926829268292683,
+    "tflite_test_accuracy": 0.8975609756097561,
+    "tflite_model_size_mb": 4.6202392578125,
+    "average_inference_latency_ms": 7.7466804487169325,
+    "target_device": "Raspberry Pi 5 (ARM Cortex-A76, 64-bit OS)",
+    "conversion_timestamp": "2026-09-04T13:39:00.208673"
+}

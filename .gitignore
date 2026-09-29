@@ -1,0 +1,94 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables & secrets
+.env
+.env.local
+.env.*.local
+
+# macOS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE and editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Model checkpoints & heavy binaries (Phase 2+)
+models/*.h5
+models/*.keras
+# Allow lightweight quantized TFLite edge models for instant deployment
+!models/*.tflite
+models/*.pb
+models/variables/
+*.onnx
+
+# Results & runtime logs (Allow benchmark charts and reports)
+!results/*.png
+!results/*.txt
+!results/*.json
+!results/*.csv
+!results/.gitkeep
+!models/.gitkeep
+!notebooks/.gitkeep
+
+# Archive zips
+*.zip
+
+# Temporary captures & debug crops
+captures/*
+!captures/.gitkeep
+deployment/captures/*
+!deployment/captures/.gitkeep

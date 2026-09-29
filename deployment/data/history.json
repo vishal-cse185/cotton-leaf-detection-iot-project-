@@ -1,0 +1,26 @@
+[
+  {
+    "id": "scan_1790575850",
+    "timestamp": "2026-09-28 11:40:50",
+    "image_url": "/static/samples/healthy_sample.png",
+    "prediction": "Healthy Leaf",
+    "confidence": 100.0,
+    "inference_time_ms": 8.83,
+    "advisory": {
+      "disease_name": "Healthy Cotton Leaf",
+      "pathogen": "None (No Disease Detected)",
+      "severity": "Optimal Health",
+      "symptoms": "Vibrant emerald green foliage with smooth lamina, unobstructed venation, and balanced chlorophyll synthesis. No fungal lesions or bacterial blight detected.",
+      "immediate_action": "Continue routine crop monitoring. Inspect leaf undersides twice weekly for early sucking pests (aphids, jassids, thrips, whiteflies).",
+      "organic_remedy": "Preventative spray of 5% Neem Seed Kernel Extract (NSKE) or Panchagavya (3%) to enhance systemic plant immunity and deter vector pests.",
+      "chemical_control": "No fungicide or bactericide application required. For balanced vegetative vigor, apply foliar 19:19:19 (NPK) @ 5 g/L or 1% Potassium Nitrate (13-0-45) during square formation.",
+      "preventive_measures": "Maintain scheduled drip irrigation without waterlogging. Keep yellow and blue sticky traps (10 per acre) across the field border.",
+      "voice_summary": "Great news! Your cotton leaf is completely healthy. Continue regular field scouting and maintain balanced nutrition.",
+      "confidence": 100.0,
+      "source": "Verified Agronomic Knowledge Base (Offline Ready)",
+      "language": "en",
+      "field_conditions_noted": "Standard Field Conditions"
+    },
+    "source": "Sample: Healthy"
+  }
+]

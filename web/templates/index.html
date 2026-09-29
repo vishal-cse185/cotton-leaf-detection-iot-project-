@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CottonGuard AI - IoT & Generative AI Cotton Advisory System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <!-- Header / Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a9 9 0 0 1 9 9c0 4.97-4.03 9-9 9A9 9 0 0 1 3 11a9 9 0 0 1 9-9z"></path>
+            <path d="M12 6v6l4 2"></path>
+            <path d="M7 16c2-1 4-1 6-4 1-1.5 2-4 2-4"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>CottonGuard <span class="gradient-text">AI</span></h1>
+          <p class="brand-sub">IoT Edge DNN & Generative AI Agronomic Advisory</p>
+        </div>
+      </div>
+
+      <div class="header-telemetry" id="headerTelemetry">
+        <div class="telemetry-pill">
+          <span class="status-dot green pulse"></span>
+          <span id="deviceBadge">Raspberry Pi 5</span>
+        </div>
+        <div class="telemetry-pill">
+          <span class="pill-label">Camera:</span>
+          <strong id="cameraBadge">Module 3 (Autofocus)</strong>
+        </div>
+        <div class="telemetry-pill genai-pill" id="genaiPill" title="Click to configure Google Gemini API Key">
+          <span class="status-dot purple" id="genaiDot"></span>
+          <span class="pill-label">Gen AI:</span>
+          <strong id="genaiBadge">Offline Guard</strong>
+        </div>
+        <button class="btn-key-config" id="btnOpenKeyModal" title="Configure Gemini API Key">
+          🔑 Set Key
+        </button>
+        <button class="icon-btn" id="btnRefreshStatus" title="System Diagnostics">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="dashboard-main">
+    <div class="dashboard-grid">
+
+      <!-- LEFT COLUMN: Image Input & Camera -->
+      <section class="panel input-panel">
+        <div class="panel-header">
+          <h2>Leaf Inspection Station</h2>
+          <span class="badge live-badge">Live Input</span>
+        </div>
+
+        <!-- Mode Tabs -->
+        <div class="input-tabs">
+          <button class="tab-btn active" data-tab="tab-camera" id="tabBtnCamera">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+            Pi Camera 3
+          </button>
+          <button class="tab-btn" data-tab="tab-upload" id="tabBtnUpload">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Upload Photo
+          </button>
+          <button class="tab-btn" data-tab="tab-samples" id="tabBtnSamples">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            Demo Samples
+          </button>
+        </div>
+
+        <!-- Tab Contents -->
+        <div class="tab-content" id="tab-camera">
+          <div class="camera-control-box">
+            <div class="camera-info">
+              <span class="info-label">Connected Sensor:</span>
+              <strong id="camSensorName">Raspberry Pi Camera Module 3 (IMX708)</strong>
+            </div>
+            <button class="btn btn-primary btn-large" id="btnCapture">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="4"></circle>
+              </svg>
+              <span>Capture & Diagnose Leaf</span>
+            </button>
+            <p class="hint-text">Trigger continuous autofocus and capture high-res frame</p>
+          </div>
+        </div>
+
+        <div class="tab-content hidden" id="tab-upload">
+          <div class="dropzone" id="dropzone">
+            <input type="file" id="fileInput" accept="image/jpeg,image/png,image/jpg" class="file-input-hidden">
+            <div class="dropzone-content">
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                <path d="M12 12v9"></path>
+                <path d="m16 16-4-4-4 4"></path>
+              </svg>
+              <p><strong>Click to browse</strong> or drag & drop cotton leaf image</p>
+              <span class="dropzone-sub">Supports JPG, PNG (Max 16 MB)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content hidden" id="tab-samples">
+          <div class="samples-grid" id="samplesContainer">
+            <!-- Dynamically populated sample cards -->
+          </div>
+        </div>
+
+        <!-- Leaf Image Viewport -->
+        <div class="preview-card">
+          <div class="preview-header">
+            <span>Leaf Preview Viewport</span>
+            <span class="preview-dimensions" id="previewDims">Ready for Input</span>
+          </div>
+          <div class="preview-stage" id="previewStage">
+            <div class="scanning-laser hidden" id="scanLaser"></div>
+            <img id="activeLeafImg" src="/static/samples/healthy_sample.png" alt="Leaf under diagnosis" class="preview-image">
+            <div class="placeholder-overlay hidden" id="placeholderOverlay">
+              <p>Select or capture a leaf photo</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: DNN Edge Diagnosis & GenAI Advisory -->
+      <section class="panel results-panel">
+        <div class="panel-header">
+          <h2>Diagnosis & AI Advisory</h2>
+          <div class="lang-selector">
+            <span class="lang-label">Language:</span>
+            <select id="langSelect" class="lang-dropdown">
+              <option value="en" selected>English</option>
+              <option value="hi">हिन्दी (Hindi)</option>
+              <option value="mr">मराठी (Marathi)</option>
+              <option value="te">తెలుగు (Telugu)</option>
+              <option value="gu">ગુજરાતી (Gujarati)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Leaf Validation Alert Card (Shown when image is rejected: No Leaf or Not a Cotton Leaf) -->
+        <div class="validation-alert-card hidden" id="validationAlertCard">
+          <div class="alert-icon-box" id="alertIconBox">
+            <span id="alertIcon">🚫</span>
+          </div>
+          <div class="alert-content">
+            <div class="alert-tag" id="alertTag">Out-of-Distribution Warning</div>
+            <h3 class="alert-title" id="alertTitle">No Leaf Detected</h3>
+            <p class="alert-message" id="alertMessage">No plant leaf was found in this image. Please center a plant leaf in front of the camera.</p>
+            
+            <div class="alert-details-grid">
+              <div class="detail-item">
+                <span class="d-label">Detected Object / Plant:</span>
+                <strong id="alertDetected">Non-Plant Surface</strong>
+              </div>
+              <div class="detail-item">
+                <span class="d-label">Verification Engine:</span>
+                <strong id="alertTier">Local Computer Vision Guard</strong>
+              </div>
+              <div class="detail-item full-width">
+                <span class="d-label">Visual Findings:</span>
+                <span id="alertDetails">Foliage spectral coverage below threshold.</span>
+              </div>
+            </div>
+
+            <div class="alert-guidance">
+              <strong>💡 Crop Scouting Tip:</strong>
+              <span>Hold the camera 15–25 cm above a cotton plant leaf with good natural light. Ensure the leaf blade occupies at least 50% of the frame.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time DNN Classification Card -->
+        <div class="diagnosis-card" id="diagnosisCard">
+          <div class="dual-ai-badge" id="dualAiBadge">
+            <span class="badge-icon">🌿</span>
+            <span class="badge-text" id="dualAiText">Cotton Leaf Verified (Gossypium hirsutum)</span>
+            <span class="badge-tier" id="dualAiTier">Dual-AI Consensus</span>
+          </div>
+
+          <div class="diagnosis-main">
+            <div class="diagnosis-title-group">
+              <span class="diagnosis-tag">MobileNetV2 Edge Inference</span>
+              <h3 class="diagnosis-name" id="diagnosisTitle">Healthy Cotton Leaf</h3>
+              <p class="pathogen-text" id="pathogenText">No Disease Detected (Gossypium hirsutum)</p>
+            </div>
+            <div class="confidence-circle" id="confidenceGauge">
+              <div class="circle-val" id="confidenceVal">99.8%</div>
+              <div class="circle-label">Confidence</div>
+            </div>
+          </div>
+
+          <!-- Gen AI Multimodal Visual Cross-Validation Box -->
+          <div class="genai-insight-box" id="genaiInsightBox">
+            <div class="insight-header">
+              <span class="insight-icon">🧠</span>
+              <strong>Generative AI Multimodal Analysis:</strong>
+            </div>
+            <p id="genaiInsightText" class="insight-text">Vegetation morphology and chlorophyll distribution match standard cotton crop foliage.</p>
+          </div>
+
+
+          <div class="metrics-row">
+            <div class="metric-pill">
+              <span class="metric-icon">⚡</span>
+              <span>Edge Latency: <strong id="latencyVal">8.9 ms</strong></span>
+            </div>
+            <div class="metric-pill">
+              <span class="metric-icon">🛡️</span>
+              <span>Severity: <strong id="severityVal">Optimal</strong></span>
+            </div>
+            <div class="metric-pill">
+              <span class="metric-icon">🧠</span>
+              <span>Advisory: <strong id="advisorySource">Gemini / Offline Verified</strong></span>
+            </div>
+          </div>
+
+          <!-- Class Probabilities Breakdown -->
+          <div class="probabilities-section">
+            <h4>Class Probability Distribution</h4>
+            <div class="prob-bars" id="probBarsContainer">
+              <!-- Dynamically populated bars -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Generative AI Agronomic Advisory Section -->
+        <div class="advisory-section">
+          <div class="advisory-header">
+            <div class="advisory-title-wrap">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+              <h3>Agronomic Action Plan</h3>
+            </div>
+            <div class="advisory-actions">
+              <button class="btn btn-secondary btn-sm" id="btnAudioSpeak" title="Voice Read-Aloud">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <span id="btnAudioText">Read Aloud</span>
+              </button>
+              <button class="btn btn-outline btn-sm" id="btnPrintReport">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                  <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                Print Report
+              </button>
+            </div>
+          </div>
+
+          <!-- Advisory Action Cards -->
+          <div class="advisory-cards">
+            <!-- Immediate Action -->
+            <div class="advice-card highlight-urgent">
+              <div class="advice-header">
+                <span class="advice-badge red">Immediate Action (Today)</span>
+              </div>
+              <p id="advImmediate" class="advice-content">Loading advisory action...</p>
+            </div>
+
+            <!-- Organic / Biological -->
+            <div class="advice-card">
+              <div class="advice-header">
+                <span class="advice-badge green">Organic & Biological Remedies</span>
+              </div>
+              <p id="advOrganic" class="advice-content">Loading organic treatments...</p>
+            </div>
+
+            <!-- Chemical Control -->
+            <div class="advice-card">
+              <div class="advice-header">
+                <span class="advice-badge amber">Chemical Control & Exact Dosages</span>
+              </div>
+              <p id="advChemical" class="advice-content">Loading chemical prescriptions...</p>
+            </div>
+
+            <!-- Prevention & Agronomy -->
+            <div class="advice-card">
+              <div class="advice-header">
+                <span class="advice-badge blue">Preventative Agronomy & Fertilizer</span>
+              </div>
+              <p id="advPrevention" class="advice-content">Loading preventative protocols...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- BOTTOM ROW: Historical Farm Diagnosis Log -->
+    <section class="panel history-panel">
+      <div class="panel-header">
+        <div class="history-title-wrap">
+          <h2>Field Diagnosis Log</h2>
+          <span class="count-badge" id="historyCount">0 Scans</span>
+        </div>
+        <button class="btn btn-text btn-sm" id="btnClearHistory">Clear Log</button>
+      </div>
+
+      <div class="history-grid" id="historyGrid">
+        <div class="empty-state" id="emptyHistoryMsg">
+          <p>No scans recorded in this session yet. Take a capture or test a demo sample to begin.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Printable Report Template (Hidden, activates on print) -->
+  <div class="print-container" id="printReport">
+    <div class="print-header">
+      <h2>COTTON LEAF HEALTH DIAGNOSIS CERTIFICATE</h2>
+      <p>IoT, MobileNetV2 DNN & Generative AI Agricultural Advisory System</p>
+      <div class="print-meta" id="printMetaDate">Generated: 2026-09-28</div>
+    </div>
+    <div class="print-body">
+      <div class="print-img-wrap">
+        <img id="printLeafImg" src="" alt="Diagnosed Leaf">
+      </div>
+      <div class="print-details">
+        <h3 id="printTitle">Disease Name</h3>
+        <p><strong>Pathogen:</strong> <span id="printPathogen"></span></p>
+        <p><strong>Confidence:</strong> <span id="printConfidence"></span></p>
+        <p><strong>Severity:</strong> <span id="printSeverity"></span></p>
+      </div>
+    </div>
+    <div class="print-prescriptions">
+      <h4>Immediate Field Action</h4>
+      <p id="printImmediate"></p>
+      <h4>Organic Remedy</h4>
+      <p id="printOrganic"></p>
+      <h4>Chemical Control</h4>
+      <p id="printChemical"></p>
+      <h4>Prevention Strategy</h4>
+      <p id="printPrevention"></p>
+    </div>
+    <div class="print-footer">
+      <p>Report certified by CottonGuard AI Edge Intelligence Suite. For agronomic guidance only.</p>
+    </div>
+  </div>
+
+  <!-- Gemini Generative AI Key Modal -->
+  <div class="modal-overlay hidden" id="keyModalOverlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3>🔑 Configure Google Gemini Generative AI</h3>
+          <p>Enables Multimodal Vision Leaf Inspection & Multilingual Agronomic Advisory</p>
+        </div>
+        <button class="modal-close" id="btnCloseKeyModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          Entering your free Google Gemini API key unlocks <strong>Dual-AI Multimodal Visual Inspection</strong>. Gemini 2.5 Flash will visually verify that uploaded images are genuine Cotton (<em>Gossypium</em>) leaves, cross-examine edge neural predictions, and generate localized chemical prescriptions in 5 Indian languages.
+        </p>
+        <div class="form-group">
+          <label for="geminiKeyInput">Gemini API Key (starts with <code>AIzaSy...</code>):</label>
+          <input type="password" id="geminiKeyInput" placeholder="Paste your Gemini API key here..." class="form-input">
+        </div>
+        <div class="key-status-msg hidden" id="keyStatusMsg"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCancelKey">Cancel</button>
+        <button class="btn btn-primary" id="btnSaveKey">Activate Gen AI Engine</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
+

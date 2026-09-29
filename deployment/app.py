@@ -139,6 +139,8 @@ def save_history_entry(entry: Dict[str, Any]):
 # ==============================================================================
 
 @app.route("/")
+@app.route("/index.html")
+@app.route("/home")
 def index():
     """Render the main farmer dashboard interface."""
     return render_template("index.html")
